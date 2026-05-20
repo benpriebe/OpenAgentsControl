@@ -168,7 +168,7 @@ if (fs.existsSync(srcAgentsDir)) {
             updatedYaml = `name: ${agentName}\n${updatedYaml}`;
           }
           if (!yamlBlock.includes('model:')) {
-            updatedYaml = `${updatedYaml}\nmodel: gemini-3.1-pro`;
+            updatedYaml = `${updatedYaml}\nmodel: gemini-3.5-flash`;
           }
           if (!yamlBlock.includes('tools:')) {
             const tools = ['read_file', 'grep_search', 'list_dir'];

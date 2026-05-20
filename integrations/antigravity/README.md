@@ -68,5 +68,5 @@ You should see `openagents-control-standards` and `context-scout` registered and
 ### In-Place Agent Frontmatter Mapping
 The setup utility dynamically translates OAC agent specifications to Antigravity configurations:
 - **`name`**: Map names directly.
-- **`model`**: Defaults to `gemini-3.1-pro` for high-performance agentic coding.
+- **`model`**: Defaults to `gemini-3.5-flash` for high-performance agentic coding.
 - **`tools`**: Intelligently infers necessary tools (e.g., `run_command`, `replace_file_content`, `write_to_file`, `read_file`, `grep_search`, `list_dir`) by parsing the OAC permission structures in-place.
