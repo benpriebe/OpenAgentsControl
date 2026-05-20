@@ -35,6 +35,10 @@ cd integrations/antigravity
 ./install-antigravity.sh
 ```
 
+> [!TIP]
+> Use the `--local` (or `-l`) flag to skip global installation and only configure the current workspace:
+> `./install-antigravity.sh --local`
+
 This will automatically:
 1. Scan your native OAC skills, commands, and subagents.
 2. Translate and inject YAML properties into original `.opencode/` markdown files in-place (safely and backwards-compatibly).

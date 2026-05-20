@@ -28,6 +28,20 @@ if ! command -v "$NODE_BIN" >/dev/null 2>&1; then
     exit 1
 fi
 
+# Parse arguments
+INSTALL_GLOBAL=true
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        --local|-l)
+            INSTALL_GLOBAL=false
+            shift
+            ;;
+        *)
+            shift
+            ;;
+    esac
+done
+
 # 1. Run local bridge setup
 echo -e "${YELLOW}🔄 Configuring local Antigravity Bridge...${NC}"
 if ! "$NODE_BIN" "$REPO_ROOT/scripts/setup-gemini-bridge.js"; then
@@ -35,29 +49,33 @@ if ! "$NODE_BIN" "$REPO_ROOT/scripts/setup-gemini-bridge.js"; then
     exit 1
 fi
 
-# Define global plugin locations
-GLOBAL_CLI_DEST="$HOME/.gemini/antigravity-cli/plugins/openagents-control-bridge"
-GLOBAL_CONFIG_DEST="$HOME/.gemini/config/plugins/openagents-control-bridge"
-LOCAL_PLUGIN_SRC="$REPO_ROOT/.agents/plugins/openagents-control-bridge"
+if [ "$INSTALL_GLOBAL" = "true" ]; then
+    # Define global plugin locations
+    GLOBAL_CLI_DEST="$HOME/.gemini/antigravity-cli/plugins/openagents-control-bridge"
+    GLOBAL_CONFIG_DEST="$HOME/.gemini/config/plugins/openagents-control-bridge"
+    LOCAL_PLUGIN_SRC="$REPO_ROOT/.agents/plugins/openagents-control-bridge"
 
-# 2. Install global plugins (optional fallback/global access)
-echo -e "\n${YELLOW}📦 Installing global plugins...${NC}"
+    # 2. Install global plugins (optional fallback/global access)
+    echo -e "\n${YELLOW}📦 Installing global plugins...${NC}"
 
-# Global CLI Destination
-mkdir -p "$HOME/.gemini/antigravity-cli/plugins"
-if [ -d "$GLOBAL_CLI_DEST" ] || [ -L "$GLOBAL_CLI_DEST" ]; then
-    rm -rf "$GLOBAL_CLI_DEST"
+    # Global CLI Destination
+    mkdir -p "$HOME/.gemini/antigravity-cli/plugins"
+    if [ -d "$GLOBAL_CLI_DEST" ] || [ -L "$GLOBAL_CLI_DEST" ]; then
+        rm -rf "$GLOBAL_CLI_DEST"
+    fi
+    cp -RL "$LOCAL_PLUGIN_SRC" "$GLOBAL_CLI_DEST"
+    echo -e "  ✓ Installed global CLI plugin ──► $GLOBAL_CLI_DEST"
+
+    # Global Config Destination
+    mkdir -p "$HOME/.gemini/config/plugins"
+    if [ -d "$GLOBAL_CONFIG_DEST" ] || [ -L "$GLOBAL_CONFIG_DEST" ]; then
+        rm -rf "$GLOBAL_CONFIG_DEST"
+    fi
+    cp -RL "$LOCAL_PLUGIN_SRC" "$GLOBAL_CONFIG_DEST"
+    echo -e "  ✓ Installed global config plugin ──► $GLOBAL_CONFIG_DEST"
+else
+    echo -e "\n${YELLOW}ℹ️ Skipping global installation (--local flag detected)${NC}"
 fi
-cp -RL "$LOCAL_PLUGIN_SRC" "$GLOBAL_CLI_DEST"
-echo -e "  ✓ Installed global CLI plugin ──► $GLOBAL_CLI_DEST"
-
-# Global Config Destination
-mkdir -p "$HOME/.gemini/config/plugins"
-if [ -d "$GLOBAL_CONFIG_DEST" ] || [ -L "$GLOBAL_CONFIG_DEST" ]; then
-    rm -rf "$GLOBAL_CONFIG_DEST"
-fi
-cp -RL "$LOCAL_PLUGIN_SRC" "$GLOBAL_CONFIG_DEST"
-echo -e "  ✓ Installed global config plugin ──► $GLOBAL_CONFIG_DEST"
 
 echo -e "\n${GREEN}✨ Antigravity Integration Successful!${NC}"
 echo -e "✓ The original .opencode/ folder structure remains pristine."
